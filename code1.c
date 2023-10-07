@@ -2,14 +2,15 @@
 #include <SinricPro.h>
 #include <SinricProSwitch.h>
 
-#define WIFI_SSID         "YourWiFiSSID"
-#define WIFI_PASS         "YourWiFiPassword"
-#define APP_KEY           "YourSinricAppKey"
-#define APP_SECRET        "YourSinricAppSecret"
+#define WIFI_SSID       "IOT-2.4G"               // Your Wi-Fi SSID
+#define WIFI_PASS       "2022iedcmbcet"         // Your Wi-Fi password
 
-#define SWITCH1_ID        "YourSwitch1ID"
-#define SWITCH2_ID        "YourSwitch2ID"
-#define SWITCH3_ID        "YourSwitch3ID"
+#define APP_KEY         "08bf5a87-3b03-469b-bc95-09d7af608707"    // Your SinricPro App Key
+#define APP_SECRET      "c52e7831-4f1d-4b33-a4c4-415f73bb1ca1-534b55ca-e802-4c16-96c5-ccf490ecdfda" // Your SinricPro App Secret
+
+#define SWITCH_ID_1     "65005548e2a1e41147659333"    // Device ID for Switch 1
+#define SWITCH_ID_2     "6500557cb1deae87502153be"    // Device ID for Switch 2
+#define SWITCH_ID_3     "65005591b1deae8750215407"    // Device ID for Switch 3
 
 #define RELAY1_PIN        D1  // Define the GPIO pin connected to the first relay (device 1)
 #define RELAY2_PIN        D2  // Define the GPIO pin connected to the second relay (device 2)
