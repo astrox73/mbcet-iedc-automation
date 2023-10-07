@@ -2,13 +2,13 @@
 #include <SinricPro.h>
 #include <SinricProSwitch.h>
 
-#define WIFI_SSID       "YourWiFiSSID"
-#define WIFI_PASS       "YourWiFiPassword"
-#define APP_KEY         "YourAppKey"
-#define APP_SECRET      "YourAppSecret"
-#define SWITCH_ID_1     "YourSwitch1DeviceID"
-#define SWITCH_ID_2     "YourSwitch2DeviceID"
-#define SWITCH_ID_3     "YourSwitch3DeviceID"
+#define WIFI_SSID       "IOT-2.4G"               // Your Wi-Fi SSID
+#define WIFI_PASS       "2022iedcmbcet"         // Your Wi-Fi password
+#define APP_KEY         "08bf5a87-3b03-469b-bc95-09d7af608707"    // Your SinricPro App Key
+#define APP_SECRET      "c52e7831-4f1d-4b33-a4c4-415f73bb1ca1-534b55ca-e802-4c16-96c5-ccf490ecdfda" // Your SinricPro App Secret
+#define SWITCH_ID_1     "65005548e2a1e41147659333"    // Device ID for Switch 1
+#define SWITCH_ID_2     "6500557cb1deae87502153be"    // Device ID for Switch 2
+#define SWITCH_ID_3     "65005591b1deae8750215407"    // Device ID for Switch 3
 
 #define RELAY_PIN_1     D1  // GPIO pin for Relay 1
 #define RELAY_PIN_2     D2  // GPIO pin for Relay 2
@@ -18,7 +18,6 @@ bool stateSwitch1 = false;
 bool stateSwitch2 = false;
 bool stateSwitch3 = false;
 
-// Define a callback function to control the relays
 bool onPowerState(const String& deviceId, bool& state) 
 {
     if (deviceId == SWITCH_ID_1) 
@@ -54,15 +53,12 @@ void setup()
     pinMode(RELAY_PIN_2, OUTPUT);
     pinMode(RELAY_PIN_3, OUTPUT);
 
-    // Initialize SinricPro
     SinricPro.begin(APP_KEY, APP_SECRET);
 
-    // Setup switches
     mySwitch1.onPowerState(onPowerState);
     mySwitch2.onPowerState(onPowerState);
     mySwitch3.onPowerState(onPowerState);
 
-    // Restore saved states (if any)
     mySwitch1.setState(stateSwitch1);
     mySwitch2.setState(stateSwitch2);
     mySwitch3.setState(stateSwitch3);
@@ -71,6 +67,5 @@ void setup()
 }
 
 void loop() {
-    // Handle SinricPro tasks
     SinricPro.process();
 }
