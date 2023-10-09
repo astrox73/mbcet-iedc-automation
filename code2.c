@@ -18,33 +18,31 @@ bool stateSwitch1 = false;
 bool stateSwitch2 = false;
 bool stateSwitch3 = false;
 
-bool onPowerState(const String& deviceId, bool& state) 
-{
-    if (deviceId == SWITCH_ID_1) 
-    {
+SinricProSwitch& mySwitch1 = SinricPro[SWITCH_ID_1];
+SinricProSwitch& mySwitch2 = SinricPro[SWITCH_ID_2];
+SinricProSwitch& mySwitch3 = SinricPro[SWITCH_ID_3];
+
+bool onPowerState(const String& deviceId, bool& state) {
+    if (deviceId == SWITCH_ID_1) {
         digitalWrite(RELAY_PIN_1, state ? HIGH : LOW);
         stateSwitch1 = state;
     }
-    else if (deviceId == SWITCH_ID_2) 
-    {
+    else if (deviceId == SWITCH_ID_2) {
         digitalWrite(RELAY_PIN_2, state ? HIGH : LOW);
         stateSwitch2 = state;
     } 
-    else if (deviceId == SWITCH_ID_3) 
-    {
+    else if (deviceId == SWITCH_ID_3) {
         digitalWrite(RELAY_PIN_3, state ? HIGH : LOW);
         stateSwitch3 = state;
     }
     return true;
 }
 
-void setup() 
-{
+void setup() {
     Serial.begin(115200);
     WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-    while (WiFi.status() != WL_CONNECTED) 
-    {
+    while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
         Serial.println("Connecting to WiFi...");
     }
@@ -58,6 +56,11 @@ void setup()
     mySwitch1.onPowerState(onPowerState);
     mySwitch2.onPowerState(onPowerState);
     mySwitch3.onPowerState(onPowerState);
+
+    // Read the initial state of your relays and set the initial state variables
+    stateSwitch1 = digitalRead(RELAY_PIN_1) == HIGH;
+    stateSwitch2 = digitalRead(RELAY_PIN_2) == HIGH;
+    stateSwitch3 = digitalRead(RELAY_PIN_3) == HIGH;
 
     mySwitch1.setState(stateSwitch1);
     mySwitch2.setState(stateSwitch2);
