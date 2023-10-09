@@ -1,7 +1,7 @@
 #include <ArduinoIoTCloud.h>
 #include <WiFiConnectionManager.h>
 
-const char THING_ID[] = "your_thing_id";  // Replace with your IoT Cloud Thing ID
+const char THING_ID[] = "486ca265-3779-43dd-8d6a-723e7fda6466";  // Replace with your IoT Cloud Thing ID
 
 void onSwitch1Change();
 void onSwitch2Change();
