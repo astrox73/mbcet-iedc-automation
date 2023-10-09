@@ -3,11 +3,12 @@
 #include <WiFiNINA.h>  // Use WiFiNINA library for compatibility with NodeMCU
 
 // Define your Wi-Fi credentials
-const char WIFI_SSID[] = "YourWiFiSSID";       // Replace with your Wi-Fi network SSID
-const char WIFI_PASS[] = "YourWiFiPassword";   // Replace with your Wi-Fi network password
+const char WIFI_SSID[] = "IOT-2.4G";       // Replace with your Wi-Fi network SSID
+const char WIFI_PASS[] = "2022iedcmbcet";  // Replace with your Wi-Fi network password
 
 // Define your IoT Cloud Thing ID
-const char THING_ID[] = "YourThingID";  // Replace with your IoT Cloud Thing ID
+const char THING_ID[] = "486ca265-3779-43dd-8d6a-723e7fda6466";  // Replace with your IoT Cloud Thing ID
+
 
 // Define three switch properties
 CloudSwitchProperty switch1Property;
