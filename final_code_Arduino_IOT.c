@@ -1,5 +1,6 @@
 #include <ArduinoIoTCloud.h>
 #include <WiFiConnectionManager.h>
+#include <Arduino.h> // Include this for the ESP8266-based NodeMCU board
 
 // Define your Wi-Fi credentials
 const char WIFI_SSID[] = "IOT-2.4G";       // Replace with your Wi-Fi network SSID
@@ -41,7 +42,12 @@ void setup() {
   pinMode(RELAY3_PIN, OUTPUT);
 
   // Initialize IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreference.autoReconnect);
+
+  // Set your IoT Cloud Thing ID
   ArduinoCloud.setThingId(THING_ID);
+
+  // Initialize switch properties
   switch1Property = ArduinoCloud.addProperty(switch1, "boolean", "Switch1", READ_WRITE);
   switch2Property = ArduinoCloud.addProperty(switch2, "boolean", "Switch2", READ_WRITE);
   switch3Property = ArduinoCloud.addProperty(switch3, "boolean", "Switch3", READ_WRITE);
@@ -50,8 +56,6 @@ void setup() {
   ArduinoCloud.onChange(switch1Property, onSwitch1Change);
   ArduinoCloud.onChange(switch2Property, onSwitch2Change);
   ArduinoCloud.onChange(switch3Property, onSwitch3Change);
-
-  ArduinoCloud.begin(ArduinoIoTPreference.autoReconnect);
 }
 
 void loop() {
