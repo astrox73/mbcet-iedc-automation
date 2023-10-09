@@ -99,7 +99,7 @@ bool onPowerState(String deviceId, bool &state)
 {
   Serial.printf("%s: %s\r\n", deviceId.c_str(), state ? "on" : "off");
   int relayPIN = devices[deviceId].relayPIN; // get the relay pin for corresponding device
-  digitalWrite(relayPIN, !state);             // set the new relay state
+  digitalWrite(relayPIN, state);             // set the new relay state to match the power state
   return true;
 }
 
@@ -121,10 +121,10 @@ void handleFlipSwitches() {
           String deviceId = flipSwitch.second.deviceId;                           // get the deviceId from config
           int relayPIN = devices[deviceId].relayPIN;                              // get the relayPIN from config
           bool newRelayState = !digitalRead(relayPIN);                            // set the new relay State
-          digitalWrite(relayPIN, newRelayState);                                  // set the trelay to the new state
+          digitalWrite(relayPIN, newRelayState);                                  // set the relay to the new state
 
           SinricProSwitch &mySwitch = SinricPro[deviceId];                        // get Switch device from SinricPro
-          mySwitch.sendPowerStateEvent(!newRelayState);                            // send the event
+          mySwitch.sendPowerStateEvent(newRelayState);                            // send the event
 #ifdef TACTILE_BUTTON
         }
 #endif      
@@ -179,6 +179,3 @@ void loop()
   SinricPro.handle();
   handleFlipSwitches();
 }
-
-
-
