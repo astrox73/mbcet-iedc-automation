@@ -18,10 +18,7 @@ bool stateSwitch1 = false;
 bool stateSwitch2 = false;
 bool stateSwitch3 = false;
 
-SinricProSwitch& mySwitch1 = SinricPro[SWITCH_ID_1];
-SinricProSwitch& mySwitch2 = SinricPro[SWITCH_ID_2];
-SinricProSwitch& mySwitch3 = SinricPro[SWITCH_ID_3];
-
+// Define the callback function to handle power state changes
 bool onPowerState(const String& deviceId, bool& state) {
     if (deviceId == SWITCH_ID_1) {
         digitalWrite(RELAY_PIN_1, state ? HIGH : LOW);
@@ -51,8 +48,15 @@ void setup() {
     pinMode(RELAY_PIN_2, OUTPUT);
     pinMode(RELAY_PIN_3, OUTPUT);
 
+    // Initialize SinricPro
     SinricPro.begin(APP_KEY, APP_SECRET);
 
+    // Add switches
+    SinricProSwitch& mySwitch1 = SinricPro[SWITCH_ID_1];
+    SinricProSwitch& mySwitch2 = SinricPro[SWITCH_ID_2];
+    SinricProSwitch& mySwitch3 = SinricPro[SWITCH_ID_3];
+
+    // Set callback function for power state changes
     mySwitch1.onPowerState(onPowerState);
     mySwitch2.onPowerState(onPowerState);
     mySwitch3.onPowerState(onPowerState);
@@ -62,13 +66,12 @@ void setup() {
     stateSwitch2 = digitalRead(RELAY_PIN_2) == HIGH;
     stateSwitch3 = digitalRead(RELAY_PIN_3) == HIGH;
 
-    mySwitch1.setState(stateSwitch1);
-    mySwitch2.setState(stateSwitch2);
-    mySwitch3.setState(stateSwitch3);
-
+    // Restore device states from SinricPro server
     SinricPro.restoreDeviceStates(true);
 }
 
 void loop() {
-    SinricPro.process();
+    // Handle SinricPro events
+    SinricPro.handle();
 }
+
