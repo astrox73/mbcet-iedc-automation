@@ -4,95 +4,74 @@
 
 #define WIFI_SSID       "IOT-2.4G"               // Your Wi-Fi SSID
 #define WIFI_PASS       "2022iedcmbcet"         // Your Wi-Fi password
-
 #define APP_KEY         "08bf5a87-3b03-469b-bc95-09d7af608707"    // Your SinricPro App Key
 #define APP_SECRET      "c52e7831-4f1d-4b33-a4c4-415f73bb1ca1-534b55ca-e802-4c16-96c5-ccf490ecdfda" // Your SinricPro App Secret
-
 #define SWITCH_ID_1     "65005548e2a1e41147659333"    // Device ID for Switch 1
 #define SWITCH_ID_2     "6500557cb1deae87502153be"    // Device ID for Switch 2
 #define SWITCH_ID_3     "65005591b1deae8750215407"    // Device ID for Switch 3
 
-#define RELAY1_PIN        D1  // Define the GPIO pin connected to the first relay (device 1)
-#define RELAY2_PIN        D2  // Define the GPIO pin connected to the second relay (device 2)
-#define RELAY3_PIN        D3  // Define the GPIO pin connected to the third relay (device 3)
+#define RELAY_PIN_1     D1  // GPIO pin for Relay 1
+#define RELAY_PIN_2     D2  // GPIO pin for Relay 2
+#define RELAY_PIN_3     D3  // GPIO pin for Relay 3
 
-bool switch1State = false;
-bool switch2State = false;
-bool switch3State = false;
+bool stateSwitch1 = false;
+bool stateSwitch2 = false;
+bool stateSwitch3 = false;
 
-WiFiClientSecure net;
-
-SinricProSwitch& switch1 = SinricPro[SOURCE_ID][SWITCH1_ID];
-SinricProSwitch& switch2 = SinricPro[SOURCE_ID][SWITCH2_ID];
-SinricProSwitch& switch3 = SinricPro[SOURCE_ID][SWITCH3_ID];
+// Define the callback function to handle power state changes
+bool onPowerState(const String& deviceId, bool& state) {
+    if (deviceId == SWITCH_ID_1) {
+        digitalWrite(RELAY_PIN_1, state ? HIGH : LOW);
+        stateSwitch1 = state;
+    }
+    else if (deviceId == SWITCH_ID_2) {
+        digitalWrite(RELAY_PIN_2, state ? HIGH : LOW);
+        stateSwitch2 = state;
+    } 
+    else if (deviceId == SWITCH_ID_3) {
+        digitalWrite(RELAY_PIN_3, state ? HIGH : LOW);
+        stateSwitch3 = state;
+    }
+    return true;
+}
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println();
+    Serial.begin(115200);
+    WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-  // Connect to Wi-Fi
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.println("Connecting to WiFi...");
+    }
 
-  // Initialize SinricPro
-  SinricPro.begin(net, APP_KEY, APP_SECRET);
+    pinMode(RELAY_PIN_1, OUTPUT);
+    pinMode(RELAY_PIN_2, OUTPUT);
+    pinMode(RELAY_PIN_3, OUTPUT);
 
-  // Setup the switches
-  switch1.onTurnOn([](TurnOnRequestData& request) {
-    switch1State = true;
-    digitalWrite(RELAY1_PIN, HIGH); // Turn on the relay 1
-    switch1.sendPowerStateEvent(true); // Report the state change to Sinric Pro
-    Serial.println("Device 1 turned on");
-  });
+    // Initialize SinricPro
+    SinricPro.begin(APP_KEY, APP_SECRET);
 
-  switch1.onTurnOff([](TurnOffRequestData& request) {
-    switch1State = false;
-    digitalWrite(RELAY1_PIN, LOW); // Turn off relay 1
-    switch1.sendPowerStateEvent(false); // Report the state change to Sinric Pro
-    Serial.println("Device 1 turned off");
-  });
+    // Add switches
+    SinricProSwitch& mySwitch1 = SinricPro[SWITCH_ID_1];
+    SinricProSwitch& mySwitch2 = SinricPro[SWITCH_ID_2];
+    SinricProSwitch& mySwitch3 = SinricPro[SWITCH_ID_3];
 
-  switch2.onTurnOn([](TurnOnRequestData& request) {
-    switch2State = true;
-    digitalWrite(RELAY2_PIN, HIGH); // Turn on relay 2
-    switch2.sendPowerStateEvent(true); // Report the state change to Sinric Pro
-    Serial.println("Device 2 turned on");
-  });
+    // Set callback function for power state changes
+    mySwitch1.onPowerState(onPowerState);
+    mySwitch2.onPowerState(onPowerState);
+    mySwitch3.onPowerState(onPowerState);
 
-  switch2.onTurnOff([](TurnOffRequestData& request) {
-    switch2State = false;
-    digitalWrite(RELAY2_PIN, LOW); // Turn off relay 2
-    switch2.sendPowerStateEvent(false); // Report the state change to Sinric Pro
-    Serial.println("Device 2 turned off");
-  });
+    // Read the initial state of your relays and set the initial state variables
+    stateSwitch1 = digitalRead(RELAY_PIN_1) == HIGH;
+    stateSwitch2 = digitalRead(RELAY_PIN_2) == HIGH;
+    stateSwitch3 = digitalRead(RELAY_PIN_3) == HIGH;
 
-  switch3.onTurnOn([](TurnOnRequestData& request) {
-    switch3State = true;
-    digitalWrite(RELAY3_PIN, HIGH); // Turn on relay 3
-    switch3.sendPowerStateEvent(true); // Report the state change to Sinric Pro
-    Serial.println("Device 3 turned on");
-  });
-
-  switch3.onTurnOff([](TurnOffRequestData& request) {
-    switch3State = false;
-    digitalWrite(RELAY3_PIN, LOW); // Turn off relay 3
-    switch3.sendPowerStateEvent(false); // Report the state change to Sinric Pro
-    Serial.println("Device 3 turned off");
-  });
-
-  // Initialize the relay pins
-  pinMode(RELAY1_PIN, OUTPUT);
-  digitalWrite(RELAY1_PIN, LOW); // Ensure relay 1 is initially off
-  pinMode(RELAY2_PIN, OUTPUT);
-  digitalWrite(RELAY2_PIN, LOW); // Ensure relay 2 is initially off
-  pinMode(RELAY3_PIN, OUTPUT);
-  digitalWrite(RELAY3_PIN, LOW); // Ensure relay 3 is initially off
+    // Restore device states from SinricPro server
+    SinricPro.restoreDeviceStates(true);
 }
 
 void loop() {
-  SinricPro.handle();
+    // Handle SinricPro events
+    SinricPro.handle();
 }
+
